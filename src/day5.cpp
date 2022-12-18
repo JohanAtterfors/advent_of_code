@@ -6,9 +6,10 @@
 
 using namespace std;
 
-void reverse_forward_lists(vector< forward_list<char> > &vll);
+void reverse_forward_lists(vector< forward_list<char> > &);
 void parse_sketch(string, vector< forward_list<char> > &);
 void parse_movement(string, vector< forward_list<char> > &);
+void parse_movement_multiple(string, vector< forward_list<char> > &);
 
 int nr_lists = 9;
 
@@ -51,7 +52,8 @@ int main()
   {
     if (line[1] == '1')
     {
-      parser = &parse_movement;
+      // Change for part 1
+      parser = &parse_movement_multiple;
       reverse_forward_lists(vector_linked_lists);
       getline(rfile, line);
       continue;
@@ -101,5 +103,27 @@ void parse_movement(string line, vector< forward_list<char> > &vll)
   {
     vll[to_stack].push_front(vll[from_stack].front());
     vll[from_stack].pop_front();
+  }
+}
+
+void parse_movement_multiple(string line, vector< forward_list<char> > &vll)
+{
+  int index_second_space = line.substr(5).find(" ") + 6;
+  int index_third_space = line.substr(index_second_space + 1).find(" ") + index_second_space + 1;
+  int index_fourth_space = line.substr(index_third_space + 1).find(" ") + index_third_space + 1;
+  int index_fifth_space = line.substr(index_fourth_space + 1).find(" ") + index_fourth_space + 1;
+  int nr_boxes_move = stoi(line.substr(5, index_second_space));
+  int from_stack = stoi(line.substr(index_third_space, index_fourth_space)) - 1;
+  int to_stack = stoi(line.substr(index_fifth_space)) - 1;
+  forward_list<char> temp;
+  for (size_t i = 0; i < nr_boxes_move; i++)
+  {
+    temp.push_front(vll[from_stack].front());
+    vll[from_stack].pop_front();
+  }
+  for (size_t i = 0; i < nr_boxes_move; i++)
+  {
+    vll[to_stack].push_front(temp.front());
+    temp.pop_front();
   }
 }
